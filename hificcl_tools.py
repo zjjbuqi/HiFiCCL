@@ -1,11 +1,6 @@
 import time
-import sys
 import math
 import subprocess
-import os
-import re
-from collections import defaultdict
-
 
 def run(func, args):
     starttime = time.time()
@@ -21,22 +16,18 @@ def run(func, args):
 
 
 def check_prerequisite(prerequisitelist: list):
-    # print('Checking prerequisites...')
     prerequisitenotfound = []
     for prerequisite in prerequisitelist:
         cmd = subprocess.run(f'which {prerequisite}', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         if cmd.stdout == b'':
             prerequisitenotfound.append(prerequisite)
-        # else:
-        #     print(f'{prerequisite} located at: {cmd.stdout.decode("utf-8").strip()}')
+
     if prerequisitenotfound != []:
         for prerequisite in prerequisitenotfound:
             print(f'[Error] prerequisite not found: {prerequisite}')
         print(
             f'[Error] Please make sure these software have been installed, exported to $PATH, and authorized executable.')
         sys.exit(0)
-    # print('All prerequisites found.')
-
 
 def decompress(file):
     if 'gzip compressed data' in subprocess.run(f'file {file}', stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -44,7 +35,6 @@ def decompress(file):
         subprocess.run(f'gzip -d {file}', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         file = '.'.join(file.split('.')[:-1])
     return file
-
 
 def readFastaAsDict(fastafile):
     fastaDict = {}
@@ -60,7 +50,6 @@ def readFastaAsDict(fastafile):
             fastaDict[sid] = seq
     return fastaDict
 
-
 def reversedseq(seq: str):
     seq = seq[::-1]
     seq = seq.replace('A', 'E')
@@ -71,12 +60,10 @@ def reversedseq(seq: str):
     seq = seq.replace('E', 'G')
     return seq
 
-
 def changeSuffix(filename, newsuffix):
     namelist = filename.split('.')
     namelist[-1] = newsuffix
     return '.'.join(namelist)
-
 
 def minimap(reffasta, qryfasta, prefix, suffix, minimapoption, overwrite, output, flag):
     if flag == 0:
@@ -124,6 +111,8 @@ def hifiasm(qryfasta, hifiasmoption, prefix,overwrite, output):
 def hifiasmchr(hifiasmoption, prefix,overwrite, output, file_list):
     print('[Info] Starting excuting hifiasm program for the reads of each chr...')
     for file in file_list:
+        if file == 'None':
+            continue
         qryfasta = output + '/' + 'chr_by_chr_reads' + '/' + file + '.fasta'
         workdir = output +'/'+ file
         try:
@@ -145,51 +134,51 @@ def hifiasmchr(hifiasmoption, prefix,overwrite, output, file_list):
                 print('stderr:')
                 print(cmdr.stderr.decode("utf-8"))
                 sys.exit(1)
-        # if os.path.getsize(f'{workdir}.p_ctg.gfa') == 0:
-        #     print(f'[Error] No p_ctg.gfa found.')
-        #     sys.exit(0)
     print('[Info] Primary assembling completed!')
 
+def convert_bases(size_bases):
+    if size_bases >= 1e9:
+        size_gb = size_bases / 1e9
+        return f"{size_gb:.2f}g"
+    else:
+        size_mb = size_bases / 1e6
+        return f"{size_mb:.2f}m"
 
-
-def canuchr(canuoption, prefix,overwrite, output, file_list):
-    print('[Info] Starting excuting canu program for the reads of each chr...')
+def flyechr(flyeoption, overwrite, output, file_list, ref_size_information):
+    print('[Info] Starting excuting flye program for the reads of each chr...')
+    print(f'[Info] {ref_size_information}')
+    print(f'info {file_list}')
     for file in file_list:
+        if file == "None":
+            continue
         qryfasta = output + '/' + 'chr_by_chr_reads' + '/' + file + '.fasta'
-        workdir = output +'/'+ file
-
+        workdir = output + '/' + file
         try:
             os.mkdir(workdir)
         except:
             pass
-
         os.chdir(workdir)
         workdir = os.getcwd()
-        filename = 'hicanu_set'
-        filepath = os.path.join(workdir, filename)
-        with open(filepath, 'w') as file:
-            file.write('minInputCoverage=4 stopOnLowCoverage=4\n')
-        workdir = workdir + '/' + prefix
-
-        if not os.path.exists(f'{workdir}.contigs.fasta') or overwrite == True:
-            cmdr = subprocess.run(f'canu {canuoption} -p {prefix} -s {filepath} -d {workdir} {qryfasta} ',
+        workdir1 = workdir + '/' + 'assembly'
+        if not os.path.exists(f'{workdir1}.fasta') or overwrite == True:
+            cmdr = subprocess.run(f'flye {flyeoption} --pacbio-hifi {qryfasta} --out-dir {workdir}',
                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             if cmdr.returncode != 0:
-                print(f'[Error] Unexcepted error occur in canu as follow:')
+                print(f'[Error] Unexcepted error occur in fyle as follow:')
                 print(f'cmd: {cmdr.args}')
                 print(f'returncode: {cmdr.returncode}')
                 print('stdout:')
                 print(cmdr.stdout.decode("utf-8"))
                 print('stderr:')
                 print(cmdr.stderr.decode("utf-8"))
-                sys.exit(1)
-        if os.path.getsize(f'{workdir}.contigs.fasta') == 0:
-            print(f'[Error] No contigs.fasta found.')
+
     print('[Info] Primary assembling completed!')
 
 def ljachr(ljaoption,overwrite, output, file_list):
     print('[Info] Starting excuting lja program for the reads of each chr...')
     for file in file_list:
+        if file == 'None':
+            continue
         qryfasta = output + '/' + 'chr_by_chr_reads' + '/' + file + '.fasta'
         workdir = output +'/'+ file
         try:
@@ -211,38 +200,6 @@ def ljachr(ljaoption,overwrite, output, file_list):
                 print('stderr:')
                 print(cmdr.stderr.decode("utf-8"))
                 sys.exit(1)
-        # if os.path.getsize(f'{workdir}.p_ctg.gfa') == 0:
-        #     print(f'[Error] No p_ctg.gfa found.')
-        #     sys.exit(0)
-    print('[Info] Primary assembling completed!')
-
-def verkkochr(verkkooption,overwrite, output, file_list):
-    print('[Info] Starting excuting verkko program for the reads of each chr...')
-    for file in file_list:
-        qryfasta = output + '/' + 'chr_by_chr_reads' + '/' + file + '.fasta'
-        workdir = output +'/'+ file
-        try:
-            os.mkdir(workdir)
-        except:
-            pass
-        os.chdir(workdir)
-        workdir = os.getcwd()
-        workdir = workdir + '/'
-        if not os.path.exists(f'{workdir}assembly.fasta') or overwrite == True:
-            cmdr = subprocess.run(f'verkko --hifi {qryfasta} {verkkooption} -d {workdir}',
-                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-            if cmdr.returncode != 0:
-                print(f'[Error] Unexcepted error occur in verkko as follow:')
-                print(f'cmd: {cmdr.args}')
-                print(f'returncode: {cmdr.returncode}')
-                print('stdout:')
-                print(cmdr.stdout.decode("utf-8"))
-                print('stderr:')
-                print(cmdr.stderr.decode("utf-8"))
-                sys.exit(1)
-        # if os.path.getsize(f'{workdir}.p_ctg.gfa') == 0:
-        #     print(f'[Error] No p_ctg.gfa found.')
-        #     sys.exit(0)
     print('[Info] Primary assembling completed!')
 
 def minigraph(pangfa, qryfasta, output, overwrite, prefix, minigraphoption):
@@ -292,28 +249,8 @@ def concatenate_gfa_files_hifiasm(prefix, output_dir):
 
     return concatenated_gfa_path
 
-def concatenate_fasta_files_canu(prefix, output_dir):
-    """
-    Concatenate GFA files with a given prefix in multiple subdirectories under output_dir.
 
-    Parameters:
-    prefix (str): The prefix of the GFA files.
-    output_dir (str): The directory containing the subdirectories with GFA files.
-
-    Returns:
-    str: The path to the concatenated GFA file.
-    """
-    fasta_files = glob.glob(f"{output_dir}/*/asm.contigs.fasta")
-    concatenated_fasta_path = f"{output_dir}/{prefix}.fasta"
-
-    with open(concatenated_fasta_path, 'w') as outfile:
-        for gfa_file in fasta_files:
-            with open(gfa_file, 'r') as infile:
-                outfile.write(infile.read())
-
-    return concatenated_fasta_path
-
-def concatenate_fasta_files_lja_verkko(prefix, output_dir):
+def concatenate_fasta_files_lja_flye(prefix, output_dir):
     """
     Concatenate GFA files with a given prefix in multiple subdirectories under output_dir.
 
