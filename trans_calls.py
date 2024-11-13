@@ -85,6 +85,7 @@ class Trans_calls:
                     continue
             refstart, refend, readstart, readend = self.c_pos(read.cigarstring, read.reference_start)
             strand_read = self.sparse_flag(read.flag)
+
             self.readInformation[read.query_name]={"chr": read.reference_name, "qrys": readstart,"qrye": readend, "refs": refstart , "refe": refend, "strand": strand_read, "sa": {}}
             if(read.has_tag('SA')==True):
                 rawsplit = read.get_tag('SA').split(';')
@@ -96,9 +97,9 @@ class Trans_calls:
                             continue
                         sa_refstart, sa_refend, sa_readstart, sa_readend = self.c_pos(cigar, sarefs)
                         if abs(sa_refstart - refstart) <= 100 and read.reference_name != sachr:
+
                             self.readInformation[read.query_name]['sa']= {"chr": sachr, "qrys": sa_readstart, "qrye": sa_readend, "refs": sa_refstart, "refe": sa_refend, "strand": strand}
                             break
-
 
     def tran_sigal_exact(self):
         pattern = r'\d+'
@@ -106,8 +107,14 @@ class Trans_calls:
             if len(self.readInformation[key]['sa'])!=0:
                 readid = key
                 Chr1 = self.readInformation[key]['chr']
+                temp1 = re.search(pattern, Chr1)
+                if temp1 == None:
+                    continue
                 number1 =int(re.search(pattern, Chr1).group())
                 Chr2 = self.readInformation[key]['sa']['chr']
+                temp2 = re.search(pattern, Chr2)
+                if temp2 == None:
+                    continue
                 number2 = int(re.search(pattern, Chr2).group())
                 strand1 = self.readInformation[key]['strand']
                 strand2 = self.readInformation[key]['sa']['strand']
@@ -205,8 +212,6 @@ class Trans_calls:
                     self.ind = self.ind + 1
             else:
                 self.insertion_point_find_and_filter(cluster_i)
-
-
 
     def insertion_point_find_and_filter(self, cluster_i):
         cluster = {}
@@ -306,11 +311,6 @@ class Trans_calls:
         self.label_revise_readid[str(self.ind)]['readid'] = self.label_revise_readid[str(self.ind)]['readid'] + cluster[deletionpoint1_ind]['readid']
         self.label_revise_readid[str(self.ind)]['readid'] = self.label_revise_readid[str(self.ind)]['readid'] + cluster[deletionpoint2_ind]['readid']
         self.ind = self.ind + 1
-
-
-
-
-
 
     def sort_key(self, item):
         return (item[0], item[1], item[2], item[3])
