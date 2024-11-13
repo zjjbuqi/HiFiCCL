@@ -1,19 +1,26 @@
 ## <a name="started"></a>Getting Started
 
 ```sh
-# Install hifiasm (requiring g++ and zlib)
+# First, install hifiasm and ensure that it is added to the environment variables (requiring g++ and zlib)  
 git clone https://github.com/chhylp123/hifiasm
 cd hifiasm && make
-
-# Run on test data (use -f0 for small datasets)
-wget https://github.com/chhylp123/hifiasm/releases/download/v0.7/chr11-2M.fa.gz
-./hifiasm -o test -t4 -f0 chr11-2M.fa.gz 2> test.log
-awk '/^S/{print ">"$2;print $3}' test.bp.p_ctg.gfa > test.p_ctg.fa  # get primary contigs in FASTA
-
-# Assemble inbred/homozygous genomes (-l0 disables duplication purging)
-hifiasm -o CHM13.asm -t32 -l0 CHM13-HiFi.fa.gz 2> CHM13.asm.log
-# Assemble heterozygous genomes with built-in duplication purging
-hifiasm -o HG002.asm -t32 HG002-file1.fq.gz HG002-file2.fq.gz
+nano ~/.bashrc  
+export PATH="/<your_dir>/hifiasm:$PATH"  
+source ~/.bashrc
+# Then, install minimap2 and hificcl (requires Python3 and the pysam package)
+git clone https://github.com/lh3/minimap2  
+cd minimap2 && make  
+nano ~/.bashrc  
+export PATH="$PATH:/<your_dir>/minimap2:$PATH"  
+git clone https://github.com/zjjbuqi/HiFiCCL.git  
+pip install pysam
+nano ~/.bashrc
+export PATH="/<your_dir>/HiFiCCL:$PATH"
+source ~/.bashrc
+# Assembly under the main mode of HiFiCCL with low-coverage HiFi reads  
+python hificcl.py -m n -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta>
+# Assembly under the optional mode of HiFiCCL with low-coverage HiFi reads
+python hificcl_primaryassemble.py -m p -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta> -R <Pan-reference.gfa>  
 
 # Hi-C phasing with paired-end short reads in two FASTQ files
 hifiasm -o HG002.asm --h1 read1.fq.gz --h2 read2.fq.gz HG002-HiFi.fq.gz
