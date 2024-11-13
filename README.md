@@ -7,54 +7,34 @@ cd hifiasm && make
 nano ~/.bashrc  
 export PATH="/<your_dir>/hifiasm:$PATH"  
 source ~/.bashrc
+
 # Then, install minimap2 and hificcl (requires Python3 and the pysam package)
 git clone https://github.com/lh3/minimap2  
 cd minimap2 && make  
 nano ~/.bashrc  
-export PATH="$PATH:/<your_dir>/minimap2:$PATH"  
+export PATH="$PATH:/<your_dir>/minimap2:$PATH"
+ 
 git clone https://github.com/zjjbuqi/HiFiCCL.git  
 pip install pysam
 nano ~/.bashrc
 export PATH="/<your_dir>/HiFiCCL:$PATH"
 source ~/.bashrc
+
 # Assembly under the main mode of HiFiCCL with low-coverage HiFi reads  
 python hificcl.py -m n -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta>
+
 # Assembly under the optional mode of HiFiCCL with low-coverage HiFi reads
 python hificcl_primaryassemble.py -m p -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta> -R <Pan-reference.gfa>  
 
-# Hi-C phasing with paired-end short reads in two FASTQ files
-hifiasm -o HG002.asm --h1 read1.fq.gz --h2 read2.fq.gz HG002-HiFi.fq.gz
-
-# Trio binning assembly (requiring https://github.com/lh3/yak)
-yak count -b37 -t16 -o pat.yak <(cat pat_1.fq.gz pat_2.fq.gz) <(cat pat_1.fq.gz pat_2.fq.gz)
-yak count -b37 -t16 -o mat.yak <(cat mat_1.fq.gz mat_2.fq.gz) <(cat mat_1.fq.gz mat_2.fq.gz)
-hifiasm -o HG002.asm -t32 -1 pat.yak -2 mat.yak HG002-HiFi.fa.gz
-
-# Improve contiguity for diploid genome assembly by self-scaffolding (`--dual-scaf`)
-hifiasm -o HG002.asm --dual-scaf --h1 read1.fq.gz --h2 read2.fq.gz HG002-HiFi.fq.gz
-
-# Preserve more telomeres for human genomes (`--telo-m CCCTAA`)
-hifiasm -o HG002.asm --telo-m CCCTAA --h1 read1.fq.gz --h2 read2.fq.gz HG002-HiFi.fq.gz
-
-# Hybrid assembly with HiFi, ultralong and Hi-C reads
-hifiasm -o HG002.asm --h1 read1.fq.gz --h2 read2.fq.gz --ul ul.fq.gz HG002-HiFi.fq.gz
-
-# Single-sample telomere-to-telomere assembly for diploid human genomes
-hifiasm -o HG002.asm --dual-scaf --telo-m CCCTAA --h1 read1.fq.gz --h2 read2.fq.gz --ul ul.fq.gz HG002-HiFi.fq.gz
-
 ```
-See [tutorial][tutorial] for more details. 
-
 ## Table of Contents
 
 - [Getting Started](#started)
 - [Introduction](#intro)
-- [Why Hifiasm?](#why)
+- [Why HiFiCCL?](#why)
 - [Usage](#use)
-  - [Assembling HiFi reads without additional data types](#hifionly)
-  - [Hi-C integration](#hic)
-  - [Trio binning](#trio)
-  - [Ultra-long ONT integration](#ul)
+  - [HiFiCCL's main mode](#main)
+  - [HiFiCCL's optional mode](#optional)
   - [Output files](#output)
 - [Results](#results)
 - [Getting Help](#help)
@@ -63,136 +43,41 @@ See [tutorial][tutorial] for more details.
 
 ## <a name="intro"></a>Introduction
 
-Hifiasm is a fast haplotype-resolved de novo assembler initially designed for PacBio HiFi reads.
-Its latest release could support the telomere-to-telomere assembly by utilizing ultralong Oxford Nanopore reads. Hifiasm produces arguably the best single-sample telomere-to-telomere assemblies combing HiFi, ultralong and Hi-C reads, and it is one of the best haplotype-resolved assemblers for the trio-binning assembly given parental short reads. For a human genome, hifiasm can produce the telomere-to-telomere assembly in one day.
+With the increasing release of telomere-to-telomere (T2T) sequences and pan-genome sequences, genomics research has entered the T2T and pan-genome era, substantially advancing the field of population genomics. Sufficient-coverage HiFi data for population genomics is often prohibitively expensive, creating an urgent need for robust ultra-low coverage assemblies. However, current assemblers underperform in such conditions. Therefore, we introduce HiFiCCL, a reference-guided, chromosome-by-chromosome assembly framework for ultra-low coverage HiFi data. Our method effectively enhances ultra-low coverage assembly performance of existing assemblers, as demonstrated on two human datasets. Furthermore, combined with Hifiasm, it performs outstandingly in comparison with other state-of-the-art assemblers. Additionally, we validated HiFiCCL with Hifiasm on two plant datasets, where it also demonstrated strong performance. Meanwhile, it enhances downstream SV detection and significantly reduces inter-chromosomal misscaffoldings. Tested on 45 human datasets, HiFiCCL exhibits strong generalization and shows promising results in population genomics applications.
 
-## <a name="why"></a>Why Hifiasm?
+## <a name="why"></a>Why HiFiCCL?
 
-* Hifiasm delivers high-quality telomere-to-telomere assemblies. It tends to generate longer contigs
-  and resolve more segmental duplications than other assemblers.
+* HiFiCCL improves the assembly performance of different assemblers, such as Hifiasm, HiFlye, and LJA, under ultra-low coverage conditions.
 
-* Given Hi-C reads or short reads from the parents, hifiasm can produce overall the best
-  haplotype-resolved assembly so far. It is the assembler of choice by the
-  [Human Pangenome Project][hpp] for the first batch of samples.
+* HiFiCCL's improvement in assembly performance is also reflected in its enhancement of assembly-based SV detection, particularly in detecting challenging medically relevant SVs.
 
-* Hifiasm can purge duplications between haplotigs without relying on
-  third-party tools such as purge\_dups. Hifiasm does not need polishing tools
-  like pilon or racon, either. This simplifies the assembly pipeline and saves
-  running time.
+* Upon scaffolding the HiFiCCL assembly results, it was found that inter-chromosomal mis-scaffoldings were significantly reduced compared to the base assemblers.
 
-* Hifiasm is fast. It can assemble a human genome in half a day and assemble a
-  ~30Gb redwood genome in three days. No genome is too large for hifiasm.
+* HiFiCCL demonstrates exceptional generalizability, as testing on 45 ultra-low coverage human datasets revealed that HiFiCCL statistically achieved better assembly quality than Hifiasm.
 
-* Hifiasm is trivial to install and easy to use. It does not required Python,
-  R or C++11 compilers, and can be compiled into a single executable. The
-  default setting works well with a variety of genomes.
-
-[hpp]: https://humanpangenome.org
+* At about 5x coverage, HiFiCCL runs faster than Hifiasm while using a comparable amount of memory.
 
 ## <a name="use"></a>Usage
 
-### <a name="hifionly"></a>Assembling HiFi reads without additional data types
+### <a name="main"></a>HiFiCCL's main mode
 
-A typical hifiasm command line looks like:
+A typical HiFiCCL command line looks like:
 ```sh
-hifiasm -o NA12878.asm -t 32 NA12878.fq.gz
+python hificcl.py -f HG002_5x.fasta -r CHM13v2.0.fasta -o <your_dir> -t 32
 ```
-where `NA12878.fq.gz` provides the input reads, `-t` sets the number of CPUs in
-use and `-o` specifies the prefix of output files. For this example, the
-primary contigs are written to `NA12878.asm.bp.p_ctg.gfa`. 
-Since v0.15, hifiasm also produces two sets of
-partially phased contigs at `NA12878.asm.bp.hap?.p_ctg.gfa`. This pair of files
-can be thought to represent the two haplotypes in a diploid genome, though with
-occasional switch errors. The frequency of switches is determined by the
-heterozygosity of the input sample.
+where `-f` specifies the input reads, `-r` specifies the T2T reference genome used to guide the assembly, `-t` sets the number of CPUs in use and `-o` specifies the output directory. Finally, the primary contigs are written to `output.fasta`. 
 
-At the first run, hifiasm saves corrected reads and
-overlaps to disk as `NA12878.asm.*.bin`. It reuses the saved results to avoid
-the time-consuming all-vs-all overlap calculation next time. You may specify
-`-i` to ignore precomputed overlaps and redo overlapping from raw reads.
-You can also dump error corrected reads in FASTA and read overlaps in PAF with
+HiFiCCL uses Hifiasm as the default base assembler, but you can specify a different assembler using the `-a` option, such as `-a flye` or `-a lja`, provided that these base assemblers are already installed and added to the system path.
+
+HiFiCCL also generates assembly results for each chromosome. For more details, refer to the Getting help section.
+
+### <a name="optional"></a>HiFiCCL' optional mode
+
+HiFiCCL can utilize not only the T2T reference genome to guide assembly, but also the pangenome graph simultaneously for assembly guidance.
 ```sh
-hifiasm -o NA12878.asm -t 32 --write-paf --write-ec /dev/null
+python hificcl.py -m p -f HG002_5x.fasta -r CHM13v2.0.fasta -R hprc-v1.0-minigraph-chm13.gfa -o <your_dir> -t 32
 ```
-
-Hifiasm purges haplotig duplications by default. For inbred or homozygous
-genomes, you may disable purging with option `-l0`. Old HiFi reads may contain
-short adapter sequences at the ends of reads. You can specify `-z20` to trim
-both ends of reads by 20bp. For small genomes, use `-f0` to disable the initial
-bloom filter which takes 16GB memory at the beginning. For genomes much larger
-than human, applying `-f38` or even `-f39` is preferred to save memory on k-mer
-counting.
-
-### <a name="hic"></a>Hi-C integration
-
-Hifiasm can generate a pair of haplotype-resolved assemblies with paired-end
-Hi-C reads:
-```sh
-hifiasm -o NA12878.asm -t32 --h1 read1.fq.gz --h2 read2.fq.gz HiFi-reads.fq.gz
-```
-In this mode, each contig is supposed to be a haplotig, which by definition
-comes from one parental haplotype only. Hifiasm often puts all contigs from the
-same parental chromosome in one assembly. It has cleanly separated chrX and
-chrY for a human male dataset. Nonetheless, phasing across centromeres is
-challenging. Hifiasm is often able to phase entire chromosomes but it may fail 
-in rare cases. Also, contigs from different parental chromosomes are randomly mixed as
-it is just not possible to phase across chromosomes with Hi-C.
-
-Hifiasm does not perform scaffolding for now. You need to run a standalone
-scaffolder such as SALSA or 3D-DNA to scaffold phased haplotigs.
-
-### <a name="trio"></a>Trio binning
-
-When parental short reads are available, hifiasm can also generate a pair of
-haplotype-resolved assemblies with trio binning. To perform such assembly, you
-need to count k-mers first with [yak][yak] first and then do assembly:
-```sh
-yak count -k31 -b37 -t16 -o pat.yak paternal.fq.gz
-yak count -k31 -b37 -t16 -o mat.yak maternal.fq.gz
-hifiasm -o NA12878.asm -t 32 -1 pat.yak -2 mat.yak NA12878.fq.gz
-```
-Here `NA12878.asm.dip.hap1.p_ctg.gfa` and `NA12878.asm.dip.hap2.p_ctg.gfa` give the two
-haplotype assemblies. In the binning mode, hifiasm does not purge haplotig
-duplicates by default. Because hifiasm reuses saved overlaps, you can
-generate both primary/alternate assemblies and trio binning assemblies with
-```sh
-hifiasm -o NA12878.asm -t 32 NA12878.fq.gz 2> NA12878.asm.pri.log
-hifiasm -o NA12878.asm -t 32 -1 pat.yak -2 mat.yak /dev/null 2> NA12878.asm.trio.log
-```
-The second command line will run much faster than the first.
-
-### <a name="ul"></a>Ultra-long ONT integration
-
-Hifiasm could integrate ultra-long ONT reads to produce the telomere-to-telomere assembly:
-```sh
-hifiasm -o NA12878.asm -t32 --ul ul.fq.gz HiFi-reads.fq.gz
-```
-For the single-sample telomere-to-telomere assembly with Hi-C reads:
-```sh
-hifiasm -o NA12878.asm -t32 --ul ul.fq.gz --h1 read1.fq.gz --h2 read2.fq.gz HiFi-reads.fq.gz
-```
-For the trio-binning telomere-to-telomere assembly:
-```sh
-hifiasm -o NA12878.asm -t32 --ul ul.fq.gz -1 pat.yak -2 mat.yak HiFi-reads.fq.gz
-```
-
-### <a name="ul"></a>Self-scaffolding
-
-For diploid haplotype-resolved genome assembly, hifiasm can further enhance assembly contiguity 
-by introducing scaffolding. It leverages the assemblies of the two haplotypes to scaffold each other. 
-Specifically, if there is a gap within the haplotype 1 assembly, hifiasm will use the corresponding 
-homologous region in haplotype 2 to scaffold haplotype 1. Below is an example using the `--dual-scaf` option.
-```sh
-hifiasm -o NA12878.asm -t32 --dual-scaf HiFi-reads.fq.gz
-```
-
-### <a name="ul"></a>Preserve more telomeres for T2T assemblies
-
-Hifiasm can preserve more telomeres by specifying the telomere motif using the `--telo-m` option. 
-Below is an example applied to human genome assembly.
-```sh
-hifiasm -o NA12878.asm -t32 --telo-m CCCTAA HiFi-reads.fq.gz
-```
+In this mode, you need to use the `-m` option to specify the optional mode, use the `-R` option to specify the pangenome graph for assembly guidance.
 
 ### <a name="output"></a>Output files
 
