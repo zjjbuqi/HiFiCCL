@@ -24,12 +24,19 @@ source ~/.bashrc
 python hificcl.py -m n -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta>
 
 # Assembly under the optional mode of HiFiCCL with low-coverage HiFi reads
-python hificcl_primaryassemble.py -m p -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta> -R <Pan-reference.gfa>  
+python hificcl.py -m p -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta> -R <Pan-reference.gfa>  
 
 ```
+## <a name="Dependency"></a>Dependency
+1. [minimap2](https://github.com/lh3/minimap2)
+2. [hifiasm](https://github.com/chhylp123/hifiasm) or [flye](https://github.com/mikolmogorov/Flye) or [lja](https://github.com/AntonBankevich/LJA)
+3. [pysam](https://github.com/pysam-developers/pysam)
+4. [python3.10.11](https://www.python.org/downloads/release/python-31011/)
+
 ## Table of Contents
 
 - [Getting Started](#started)
+- [Dependency](#dependency)
 - [Introduction](#intro)
 - [Why HiFiCCL?](#why)
 - [Usage](#use)
@@ -37,7 +44,10 @@ python hificcl_primaryassemble.py -m p -o ./ -t 30 -f <Input.fasta> -r <T2T-refe
   - [HiFiCCL's optional mode](#optional)
   - [Output files](#output)
 - [Results](#results)
-- [Getting Help](#help)
+- [Tutorial](#help)
+  - [Installation](#install)
+  - [HiFiCCL's commands](#commands)
+  - [Output](#out)
 - [Limitations](#limit)
 - [Citing Hifiasm](#cite)
 
@@ -69,7 +79,7 @@ where `-f` specifies the input reads, `-r` specifies the T2T reference genome us
 
 HiFiCCL uses Hifiasm as the default base assembler, but you can specify a different assembler using the `-a` option, such as `-a flye` or `-a lja`, provided that these base assemblers are already installed and added to the system path.
 
-HiFiCCL also generates assembly results for each chromosome. For more details, refer to the Getting help section.
+HiFiCCL also generates assembly results for each chromosome. For more details, refer to the [tutorial] section.
 
 ### <a name="optional"></a>HiFiCCL' optional mode
 
@@ -81,75 +91,73 @@ In this mode, you need to use the `-m` option to specify the optional mode, use 
 
 ### <a name="output"></a>Output files
 
-Hifiasm generates different types of assemblies based on the input data. 
-It also writes error corrected reads to the *prefix*.ec.bin binary file and
-writes overlaps to *prefix*.ovlp.source.bin and *prefix*.ovlp.reverse.bin.
-For more details, please see the complete [documentation][tutorial_output].
+HiFiCCL will generate the alignment information of the reads to the reference genome, which is written to *prefix*.map_to_reference.sam, and the pairwise alignment information between the reads, which is written to *prefix*.all_vs_all.paf. Additionally, it will output the assembly results for different chromosomes, as well as the merged assembly results. For more details, refer to the [tutorial] section.
 
 ## <a name="results"></a>Results
 
-The following table shows the statistics of several hifiasm primary assemblies assembled with v0.12:
+The following table shows the statistics of HiFiCCL combined with Hifiasm(0.19.5-r592).
 
-|<sub>Dataset<sub>|<sub>Size<sub>|<sub>Cov.<sub>|<sub>Asm options<sub>|<sub>CPU time<sub>|<sub>Wall time<sub>|<sub>RAM<sub>|<sub> N50<sub>|
-|:---------------|-----:|-----:|:---------------------|-------:|--------:|----:|----------------:|
-|<sub>[Mouse (C57/BL6J)][mouse-data]</sub>|<sub>2.6Gb</sub> |<sub>&times;25</sub>|<sub>-t48 -l0</sub> |<sub>172.9h</sub> |<sub>4.8h</sub> |<sub>76G</sub> |<sub>21.1Mb</sub>|
-|<sub>[Maize (B73)][maize-data]</sub>     |<sub>2.2Gb</sub> |<sub>&times;22</sub>|<sub>-t48 -l0</sub> |<sub>203.2h</sub> |<sub>5.1h</sub> |<sub>68G</sub> |<sub>36.7Mb</sub>|
-|<sub>[Strawberry][strawberry-data]</sub> |<sub>0.8Gb</sub> |<sub>&times;36</sub>|<sub>-t48 -D10</sub>|<sub>152.7h</sub> |<sub>3.7h</sub> |<sub>91G</sub> |<sub>17.8Mb</sub>|
-|<sub>[Frog][frog-data]</sub>             |<sub>9.5Gb</sub> |<sub>&times;29</sub>|<sub>-t48</sub>     |<sub>2834.3h</sub>|<sub>69.0h</sub>|<sub>463G</sub>|<sub>9.3Mb</sub>|
-|<sub>[Redwood][redwood-data]</sub>       |<sub>35.6Gb</sub>|<sub>&times;28</sub>|<sub>-t80</sub>     |<sub>3890.3h</sub>|<sub>65.5h</sub>|<sub>699G</sub>|<sub>5.4Mb</sub>|
-|<sub>[Human (CHM13)][CHM13-data]</sub>   |<sub>3.1Gb</sub> |<sub>&times;32</sub>|<sub>-t48 -l0</sub> |<sub>310.7h</sub> |<sub>8.2h</sub> |<sub>114G</sub>|<sub>88.9Mb</sub>|
-|<sub>[Human (HG00733)][HG00733-data]</sub>|<sub>3.1Gb</sub>|<sub>&times;33</sub>|<sub>-t48</sub>     |<sub>269.1h</sub> |<sub>6.9h</sub> |<sub>135G</sub>|<sub>69.9Mb</sub>|
-|<sub>[Human (HG002)][NA24385-data]</sub> |<sub>3.1Gb</sub> |<sub>&times;36</sub>|<sub>-t48</sub>     |<sub>305.4h</sub> |<sub>7.7h</sub> |<sub>137G</sub>|<sub>98.7Mb</sub>|
+|<sub>Dataset<sub>|<sub>Size<sub>|<sub>Cov.<sub>|<sub>Asm options<sub>|<sub>Wall time<sub>|<sub>Maximum resident set size<sub>|<sub> NG50<sub>|
+|:---------------|-----:|-----:|:---------------------|--------:|----:|----------------:|
+|<sub>[HG002][hg002-data]</sub>|<sub>2.79Gb</sub>|<sub>&times;5</sub>|<sub>-t20 --primary</sub>|<sub>5.0h</sub>|<sub>55G</sub>|<sub>199.0Kb</sub>|
+|<sub>[NA19240][na19240-data]</sub>|<sub>2.64Gb</sub>|<sub>&times;5</sub>|<sub>-t20 --primary</sub> |<sub>4.1h</sub>|<sub>53G</sub>|<sub>123.4Kb</sub>|
+|<sub>[Rice][rice-data]</sub>|<sub>321.8Mb</sub>|<sub>&times;5</sub>|<sub>-t20 --primary</sub>|<sub>0.67h</sub>|<sub>19.0G</sub>|<sub>61.0Kb</sub>|
+|<sub>[Arabidopsisthaliana][Arabidopsisthaliana-data]</sub>|<sub>117.6Mb</sub>|<sub>&times;5</sub>|<sub>-t20 --primary</sub>|<sub>0.2h</sub>|<sub>17.4G</sub>|<sub>90.4Kb</sub>|
 
-[mouse-data]:      https://www.ncbi.nlm.nih.gov/sra/?term=SRR11606870
-[maize-data]:      https://www.ncbi.nlm.nih.gov/sra/?term=SRR11606869
-[strawberry-data]: https://www.ncbi.nlm.nih.gov/sra/?term=SRR11606867
-[frog-data]:       https://www.ncbi.nlm.nih.gov/sra?term=(SRR11606868)%20OR%20SRR12048570
-[redwood-data]:    https://www.ncbi.nlm.nih.gov/sra/?term=SRP251156
-[CHM13-data]:      https://www.ncbi.nlm.nih.gov/sra?term=(((SRR11292120)%20OR%20SRR11292121)%20OR%20SRR11292122)%20OR%20SRR11292123
+[hg002-data]: https://www.ncbi.nlm.nih.gov/sra/SRR10382244
+[na19240-data]: https://www.ncbi.nlm.nih.gov/sra/?term=SRR14611231
+[rice-data]: https://www.ncbi.nlm.nih.gov/sra/?term=SRR11606867
+[Arabidopsisthaliana-data]: https://ngdc.cncb.ac.cn/gsa/search?searchTerm=CRR573321
+## <a name="help"></a>Tutorial
+### <a name="install"></a>Installation
+HiFiCCL relies on minimap2 for alignment and various assemblers for assembly. If you intend to use HiFiCCL with Hifiasm for assembly, you first need to visit minimap2's GitHub page [https://github.com/lh3/minimap2], install minimap2, and add it to your system path to ensure the tool can be invoked directly by typing minimap2 in the command line. Then, you need to visit Hifiasm's GitHub page [https://github.com/chhylp123/hifiasm], install Hifiasm, and similarly add it to your system path. If you wish to use other base assemblers, follow the same process.
+Then, install HiFiCCL directly from GitHub. You will need to install the pysam package. The command is as follows:
+```sh
+git clone https://github.com/zjjbuqi/HiFiCCL.git  
+pip install pysam
+```
+Similarly, you need to add HiFiCCL to the system path.
+### <a name="commands"></a>HiFiCCL's commands
+```
+usage: hificcl.py [-h] [-m model [str]] [-r T2T_reference_genome] [-R Pangenome_graph] -f input_reads [file] [-p prefix [str]] [-t threads [str]]
+                  [--overwrite] [-a assembler [str]] [--hifiasmoption [str]] [--ljaoption [str]] [--flyeoption [str]] [--minimapoption1 [str]]
+                  [--minimapoption2 [str]] [--max_hang [int]] [--int_frac [float]] [--minigraphoption [float]] [-o output_dir [str]] [-W weight [int]]
+                  [-N number [int]] [--iterations [int]] [--process [int]] [-v]
 
-Hifiasm can assemble a 3.1Gb human genome in several hours or a ~30Gb hexaploid
-redwood genome in a few days on a single machine. For trio binning assembly:
+options:
+  -h, --help            show this help message and exit
+  -m model [str]        Select the reference genome, normal or pan-genome. Please enter n or p! [n]
+  -r T2T_reference_genome
+                        T2T reference genome file, FASTA format.
+  -R Pangenome_graph    Pan-reference genome file, GFA format. [optional]
+  -f input_reads [file]
+                        (*Required) raw reads file, FASTA format.
+  -p prefix [str]       The prefix used on generated files, default: hificcl
+  -t threads [str]      Use number of threads, default: 10
+  --overwrite           Overwrite existing alignment file instead of reuse.
+  -a assembler [str]    Specify assembler (support hifiasm, lja, and flye), default: hifiasm.
+  --hifiasmoption [str]
+                        Pass additional parameters to hifiasm program for primary assembly [default --primary].
+  --ljaoption [str]     Pass additional parameters to lja program for primary assembly [default --diploid].
+  --flyeoption [str]    Pass additional parameters to flye program for primary
+  --minimapoption1 [str]
+                        Pass additional parameters to minimap2 program for all-vs-all mapping.
+  --minimapoption2 [str]
+                        Pass additional parameters to minimap2 program for mapping to reference.
+  --max_hang [int]      Maximum overhang length [1000]. An overhang is an unmapped region that should be mapped given a true overlap or true containment. If
+                        the overhang is too long, the mapping is considered an internal match and will be ignored.
+  --int_frac [float]    Minimal ratio of mapping length to mapping+overhang length for a mapping considered a containment or an overlap [0.8].
+  --minigraphoption [float]
+                        Pass additional parameters to minigraph program for mapping to pan-reference-genome.
+  -o output_dir [str]   Output files path [default current directory]
+  -W weight [int]       Lainning drop weight [0.75].
+  -N number [int]       Supporting the numebr of lainning reads [3]
+  --iterations [int]    Chromosome label correction rounds [200]
+  --process [int]       Number of processes used, with options of 1 or 2 [1]
+  -v, --version         The version of HiFiCCL
 
-|<sub>Dataset<sub>|<sub>Cov.<sub>|<sub>CPU time<sub>|<sub>Elapsed time<sub>|<sub>RAM<sub>|<sub> N50<sub>|
-|:---------------|-----:|-------:|--------:|----:|----------------:|
-|<sub>[HG00733][HG00733-data], [\[father\]][HG00731-data], [\[mother\]][HG00732-data]</sub>|<sub>&times;33</sub>|<sub>269.1h</sub>|<sub>6.9h</sub>|<sub>135G</sub>|<sub>35.1Mb (paternal), 34.9Mb (maternal)</sub>|
-|<sub>[HG002][NA24385-data],   [\[father\]][NA24149-data], [\[mother\]][NA24143-data]</sup>|<sub>&times;36</sub>|<sub>305.4h</sub>|<sub>7.7h</sub>|<sub>137G</sub>|<sub>41.0Mb (paternal), 40.8Mb (maternal)</sub>|
-
-<!--
-|<sub>[NA12878][NA12878-data], [\[father\]][NA12891-data], [\[mother\]][NA12892-data]</sub>|<sub>&times;30</sub>|<sub>180.8h</sub>|<sub>4.9h</sub>|<sub>123G</sub>|<sub>27.7Mb (paternal), 27.0Mb (maternal)</sub>|
--->
-
-[HG00733-data]: https://www.ebi.ac.uk/ena/data/view/ERX3831682
-[HG00731-data]: https://www.ebi.ac.uk/ena/data/view/ERR3241754
-[HG00732-data]: https://www.ebi.ac.uk/ena/data/view/ERR3241755
-[NA24385-data]: https://www.ncbi.nlm.nih.gov/sra?term=(((SRR10382244)%20OR%20SRR10382245)%20OR%20SRR10382248)%20OR%20SRR10382249
-[NA24149-data]: https://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/data/AshkenazimTrio/HG003_NA24149_father/NIST_HiSeq_HG003_Homogeneity-12389378/HG003Run01-13262252/
-[NA24143-data]: https://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/data/AshkenazimTrio/HG004_NA24143_mother/NIST_HiSeq_HG004_Homogeneity-14572558/HG004Run01-15133132/
-[NA12878-data]: https://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/data/NA12878/PacBio_SequelII_CCS_11kb/
-[NA12891-data]: https://www.ebi.ac.uk/ena/data/view/ERR194160
-[NA12892-data]: https://www.ebi.ac.uk/ena/data/view/ERR194161
-
-Human assemblies above can be acquired [from Zenodo][zenodo-human] and
-non-human ones are available [here][zenodo-nonh].
-
-[zenodo-human]: https://zenodo.org/record/4393631
-[zenodo-nonh]: https://zenodo.org/record/4393750
-[unitig]: http://wgs-assembler.sourceforge.net/wiki/index.php/Celera_Assembler_Terminology
-[gfa]: https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md
-[paf]: https://github.com/lh3/miniasm/blob/master/PAF.md
-[yak]: https://github.com/lh3/yak
-[tutorial]: https://hifiasm.readthedocs.io/en/latest/index.html
-[tutorial_output]: https://hifiasm.readthedocs.io/en/latest/interpreting-output.html#interpreting-output
-
-
-## <a name="help"></a>Getting Help
-
-For detailed description of options, please see [tutorial][tutorial] or `man ./hifiasm.1`. The `-h`
-option of hifiasm also provides brief description of options. If you have
-further questions, please raise an issue at the [issue
-page](https://github.com/chhylp123/hifiasm/issues).
-
+Example: python hificcl.py -r <T2T_Reference.fasta> -f <your_input.fasta> -t <threads> -o <your_dir>
+```
 ## <a name="limit"></a>Limitations
 
 1. Purging haplotig duplications may introduce misassemblies.
