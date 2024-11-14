@@ -12,7 +12,7 @@ source ~/.bashrc
 git clone https://github.com/lh3/minimap2  
 cd minimap2 && make  
 nano ~/.bashrc  
-export PATH="$PATH:/<your_dir>/minimap2:$PATH"
+export PATH="/<your_dir>/minimap2:$PATH"
  
 git clone https://github.com/zjjbuqi/HiFiCCL.git  
 pip install pysam
