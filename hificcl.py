@@ -102,8 +102,8 @@ def Primaryassemble(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(epilog="Example:\n python hificcl.py -r <T2T_Reference.fasta> -f <your_input.fasta> -t <threads> -o <your_dir>")
     parser.add_argument('-m', dest='model', metavar="model [str]", default='n',help='Select the reference genome, normal or pan-genome. Please enter n or p! [n]')
-    parser.add_argument('-r', dest='reference_genome [file]', metavar="T2T_reference_genome",help='T2T reference genome file, FASTA format.')
-    parser.add_argument('-R', dest='pan_reference_genome [file]', metavar="Pangenome_graph", help='Pan-reference genome file, GFA format. [optional]')
+    parser.add_argument('-r', dest='reference_genome', metavar="T2T_reference_genome [file]",help='T2T reference genome file, FASTA format.')
+    parser.add_argument('-R', dest='pan_reference_genome', metavar="Pangenome_graph [file]", help='Pan-reference genome file, GFA format. [optional]')
     parser.add_argument('-f', dest='reads', metavar="input_reads [file]", required=True, help='(*Required) raw reads file, FASTA format.')
     parser.add_argument('-p', dest='prefix', metavar="prefix [str]", default='hificcl',
                         help='The prefix used on generated files, default: hificcl')
