@@ -8,7 +8,7 @@ nano ~/.bashrc
 export PATH="/<your_dir>/hifiasm:$PATH"  
 source ~/.bashrc
 
-# Then, install minimap2 and hificcl (requires Python3 and the pysam package)
+# Then, install minimap2 and hificcl (requires Python3.10 and the pysam package)
 git clone https://github.com/lh3/minimap2  
 cd minimap2 && make  
 nano ~/.bashrc  
@@ -21,7 +21,7 @@ export PATH="/<your_dir>/HiFiCCL:$PATH"
 source ~/.bashrc
 
 # Assembly under the main mode of HiFiCCL with low-coverage HiFi reads  
-python hificcl.py -m n -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta>
+python hificcl.py -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta>
 
 # Assembly under the optional mode of HiFiCCL with low-coverage HiFi reads
 python hificcl.py -m p -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta> -R <Pan-reference.gfa>  
@@ -99,10 +99,10 @@ The following table shows the statistics of HiFiCCL combined with Hifiasm(0.19.5
 
 |<sub>Dataset<sub>|<sub>Size<sub>|<sub>Cov.<sub>|<sub>Asm options<sub>|<sub>Wall time<sub>|<sub>Maximum resident set size<sub>|<sub> NG50<sub>|
 |:---------------|-----:|-----:|:---------------------|--------:|----:|----------------:|
-|<sub>[HG002][hg002-data]</sub>|<sub>2.79Gb</sub>|<sub>&times;5</sub>|<sub>-t20 --primary</sub>|<sub>5.0h</sub>|<sub>55G</sub>|<sub>199.0Kb</sub>|
-|<sub>[NA19240][na19240-data]</sub>|<sub>2.64Gb</sub>|<sub>&times;5</sub>|<sub>-t20 --primary</sub> |<sub>4.1h</sub>|<sub>53G</sub>|<sub>123.4Kb</sub>|
-|<sub>[Rice][rice-data]</sub>|<sub>321.8Mb</sub>|<sub>&times;5</sub>|<sub>-t20 --primary</sub>|<sub>0.67h</sub>|<sub>19.0G</sub>|<sub>61.0Kb</sub>|
-|<sub>[Arabidopsisthaliana][Arabidopsisthaliana-data]</sub>|<sub>117.6Mb</sub>|<sub>&times;5</sub>|<sub>-t20 --primary</sub>|<sub>0.2h</sub>|<sub>17.4G</sub>|<sub>90.4Kb</sub>|
+|<sub>[HG002][hg002-data]</sub>|<sub>3.1Gb</sub>|<sub>&times;5</sub>|<sub>-t20 --primary</sub>|<sub>5.0h</sub>|<sub>55G</sub>|<sub>199.0Kb</sub>|
+|<sub>[NA19240][na19240-data]</sub>|<sub>3.1Gb</sub>|<sub>&times;5</sub>|<sub>-t20 --primary</sub> |<sub>4.1h</sub>|<sub>53G</sub>|<sub>123.4Kb</sub>|
+|<sub>[Rice][rice-data]</sub>|<sub>390Mb</sub>|<sub>&times;5</sub>|<sub>-t20 --primary</sub>|<sub>0.67h</sub>|<sub>19.0G</sub>|<sub>61.0Kb</sub>|
+|<sub>[Arabidopsisthaliana][Arabidopsisthaliana-data]</sub>|<sub>135Mb</sub>|<sub>&times;5</sub>|<sub>-t20 --primary</sub>|<sub>0.2h</sub>|<sub>17.4G</sub>|<sub>90.4Kb</sub>|
 
 [hg002-data]: https://www.ncbi.nlm.nih.gov/sra/SRR10382244
 [na19240-data]: https://www.ncbi.nlm.nih.gov/sra/?term=SRR14611231
@@ -158,25 +158,15 @@ options:
 
 Example: python hificcl.py -r <T2T_Reference.fasta> -f <your_input.fasta> -t <threads> -o <your_dir>
 ```
+### <a name="out"></a>Output
+HiFiCCL will generate the alignment information of the reads to the reference genome, which is written to `*prefix*.map_to_reference.sam`, and the pairwise alignment information between the reads, which is written to `*prefix*.all_vs_all.paf`. Additionally, it will output the assembly results for different chromosomes, as well as the merged assembly results. The `chr_by_chr_reads_initial` file stores the results of the reads aligned to the reference genome before applying the chromosome binning algorithm, while `chr_by_chr_reads` file contains the results after applying the chromosome binning algorithm. `chr*` files represent the assembly results for different chromosomes. output.fasta is the final assembly result, used for assembly evaluation.
+
 ## <a name="limit"></a>Limitations
 
-1. Purging haplotig duplications may introduce misassemblies.
+1. The assembly accuracy of HiFiCCL becomes compromised as HiFi sequencing data coverage increases. This may be due to several factors, such as errors in chromosomal binning due to increased coverage or the impact of alignment errors.
+2. HiFiCCL solely utilizes HiFi data; however, incorporating multiple data types, such as Hi-C or nanopore data, may further enhance chromosome-by-chromosome assembly performance. This approach may potentially yield superior results in medium- and high-coverage datasets and enable T2T (telomere-to-telomere) sequence assembly at lower coverage, thus enabling high-precision genetic analyses at reduced costs.
+3. The optional mode of HiFiCCL performs comparably to the main mode. With the further development of pangenome construction tools and alignment tools, as well as the refinement of pangenome reference sequences, the optional mode is expected to achieve superior performance and may eventually replace the main mode, which is currently only applicable to the draft human pangenome.
 
-## <a name="cite"></a>Citating Hifiasm
+## <a name="cite"></a>Citing HiFiCCL
 
-If you use hifiasm in your work, please cite:
-
-> Cheng, H., Concepcion, G.T., Feng, X., Zhang, H., Li H. (2021)
-> Haplotype-resolved de novo assembly using phased assembly graphs with
-> hifiasm. *Nat Methods*, **18**:170-175.
-> https://doi.org/10.1038/s41592-020-01056-5
-
-> Cheng, H., Jarvis, E.D., Fedrigo, O., Koepfli, K.P., Urban, L., Gemmell, N.J., Li, H. (2022)
-> Haplotype-resolved assembly of diploid genomes without parental data. 
-> *Nature Biotechnology*, **40**:1332–1335.
-> https://doi.org/10.1038/s41587-022-01261-x
-
-> Cheng, H., Asri, M., Lucas, J., Koren, S., Li, H. (2024)
-> Scalable telomere-to-telomere assembly for diploid and polyploid genomes with double graph. 
-> *Nat Methods*, **21**:967-970.
-> https://doi.org/10.1038/s41592-024-02269-8
+If you use HiFiCCL in your work, please cite:
