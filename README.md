@@ -49,7 +49,9 @@ python hificcl.py -m p -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta> -R 
   - [HiFiCCL's commands](#commands)
   - [Output](#out)
 - [Limitations](#limit)
+- [Contact](#contact)
 - [Citing Hifiasm](#cite)
+- [License](#license)
 
 ## <a name="intro"></a>Introduction
 
@@ -158,6 +160,8 @@ options:
 
 Example: python hificcl.py -r <T2T_Reference.fasta> -f <your_input.fasta> -t <threads> -o <your_dir>
 ```
+I hope this tool proves helpful for your research!
+
 ### <a name="out"></a>Output
 HiFiCCL will generate the alignment information of the reads to the reference genome, which is written to `*prefix*.map_to_reference.sam`, and the pairwise alignment information between the reads, which is written to `*prefix*.all_vs_all.paf`. Additionally, it will output the assembly results for different chromosomes, as well as the merged assembly results. The `chr_by_chr_reads_initial` file stores the results of the reads aligned to the reference genome before applying the chromosome binning algorithm, while `chr_by_chr_reads` file contains the results after applying the chromosome binning algorithm. `chr*` files represent the assembly results for different chromosomes. output.fasta is the final assembly result, used for assembly evaluation.
 
@@ -167,6 +171,14 @@ HiFiCCL will generate the alignment information of the reads to the reference ge
 2. HiFiCCL solely utilizes HiFi data; however, incorporating multiple data types, such as Hi-C or nanopore data, may further enhance chromosome-by-chromosome assembly performance. This approach may potentially yield superior results in medium- and high-coverage datasets and enable T2T (telomere-to-telomere) sequence assembly at lower coverage, thus enabling high-precision genetic analyses at reduced costs.
 3. The optional mode of HiFiCCL performs comparably to the main mode. With the further development of pangenome construction tools and alignment tools, as well as the refinement of pangenome reference sequences, the optional mode is expected to achieve superior performance and may eventually replace the main mode, which is currently only applicable to the draft human pangenome.
 
+## <a name="contact"></a>Contact
+
+If you experience any problems or have suggestions please create an issue or a pull request.
+
 ## <a name="cite"></a>Citing HiFiCCL
 
 If you use HiFiCCL in your work, please cite:
+
+## <a name="license"></a>License
+
+The project is licensed under the MIT License.
