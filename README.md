@@ -129,9 +129,9 @@ usage: hificcl.py [-h] [-m model [str]] [-r T2T_reference_genome] [-R Pangenome_
 options:
   -h, --help            show this help message and exit
   -m model [str]        Select the reference genome, normal or pan-genome. Please enter n or p! [n]
-  -r T2T_reference_genome
+  -r T2T_reference_genome [file]
                         T2T reference genome file, FASTA format.
-  -R Pangenome_graph    Pan-reference genome file, GFA format. [optional]
+  -R Pangenome_graph [file]   Pan-reference genome file, GFA format. [optional]
   -f input_reads [file]
                         (*Required) raw reads file, FASTA format.
   -p prefix [str]       The prefix used on generated files, default: hificcl
