@@ -50,7 +50,7 @@ python hificcl.py -m p -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta> -R 
   - [Output](#out)
 - [Limitations](#limit)
 - [Contact](#contact)
-- [Citing Hifiasm](#cite)
+- [Citing HiFiCCL](#cite)
 - [License](#license)
 
 ## <a name="intro"></a>Introduction
