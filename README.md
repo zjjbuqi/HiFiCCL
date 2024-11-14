@@ -31,7 +31,7 @@ python hificcl.py -m p -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta> -R 
 1. [minimap2](https://github.com/lh3/minimap2)
 2. [hifiasm](https://github.com/chhylp123/hifiasm) or [flye](https://github.com/mikolmogorov/Flye) or [lja](https://github.com/AntonBankevich/LJA)
 3. [pysam](https://github.com/pysam-developers/pysam)
-4. [python3.10.11](https://www.python.org/downloads/release/python-31011/)
+4. [python 3.10.11](https://www.python.org/downloads/release/python-31011/)
 
 ## Table of Contents
 
