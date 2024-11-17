@@ -27,10 +27,10 @@ nano ~/.bashrc
 export PATH="/<your_dir>/minigraph:$PATH"
 source ~/.bashrc
 
-# Assembly under the main mode of HiFiCCL with low-coverage HiFi reads  
+# Assembly under the main mode of HiFiCCL with ultra-low coverage HiFi reads  
 python hificcl.py -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta>
 
-# Assembly under the optional mode of HiFiCCL with low-coverage HiFi reads
+# Assembly under the optional mode of HiFiCCL with ultra-low coverage HiFi reads
 python hificcl.py -m p -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta> -R <Pan-reference.gfa>  
 
 ```
