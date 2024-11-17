@@ -20,6 +20,12 @@ nano ~/.bashrc
 export PATH="/<your_dir>/HiFiCCL:$PATH"
 source ~/.bashrc
 
+#[optional] if you want to use the optional mode of HiFiCCL, you also need to install minigraph and add it to the system path.
+git clone https://github.com/lh3/minigraph
+cd minigraph && make
+nano ~/.bashrc  
+export PATH="/<your_dir>/minigraph:$PATH"
+
 # Assembly under the main mode of HiFiCCL with low-coverage HiFi reads  
 python hificcl.py -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta>
 
@@ -32,6 +38,7 @@ python hificcl.py -m p -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta> -R 
 2. [hifiasm](https://github.com/chhylp123/hifiasm) or [flye](https://github.com/mikolmogorov/Flye) or [lja](https://github.com/AntonBankevich/LJA)
 3. [pysam](https://github.com/pysam-developers/pysam)
 4. [python 3.10.11](https://www.python.org/downloads/release/python-31011/)
+5. [minigraph](https://github.com/lh3/minigraph)
 
 ## Table of Contents
 
@@ -163,7 +170,7 @@ Example: python hificcl.py -r <T2T_Reference.fasta> -f <your_input.fasta> -t <th
 I hope this tool proves helpful for your research!
 
 ### <a name="out"></a>Output
-HiFiCCL will generate the alignment information of the reads to the reference genome, which is written to `*prefix*.map_to_reference.sam`, and the pairwise alignment information between the reads, which is written to `*prefix*.all_vs_all.paf`. Additionally, it will output the assembly results for different chromosomes, as well as the merged assembly results. The `chr_by_chr_reads_initial` file stores the results of the reads aligned to the reference genome before applying the chromosome binning algorithm, while `chr_by_chr_reads` file contains the results after applying the chromosome binning algorithm. `chr*` files represent the assembly results for different chromosomes. output.fasta is the final assembly result, used for assembly evaluation.
+HiFiCCL will generate the alignment information of the reads to the reference genome, which is written to `*prefix*.map_to_reference.sam`, and the pairwise alignment information between the reads, which is written to `*prefix*.all_vs_all.paf`. Additionally, it will output the assembly results for different chromosomes, as well as the merged assembly results. The `chr_by_chr_reads_initial` file stores the results of the reads aligned to the reference genome before applying the chromosome binning algorithm, while `chr_by_chr_reads` file contains the results after applying the chromosome binning algorithm. `chr*` files represent the assembly results for different chromosomes. output.fasta is the final assembly result, used for assembly evaluation. The optional mode will also output the `*prefix*.gaf` file, which represents the alignment information of sequences to the pangenome graph.
 
 ## <a name="limit"></a>Limitations
 
