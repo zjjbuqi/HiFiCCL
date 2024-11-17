@@ -25,6 +25,7 @@ git clone https://github.com/lh3/minigraph
 cd minigraph && make
 nano ~/.bashrc  
 export PATH="/<your_dir>/minigraph:$PATH"
+source ~/.bashrc
 
 # Assembly under the main mode of HiFiCCL with low-coverage HiFi reads  
 python hificcl.py -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta>
