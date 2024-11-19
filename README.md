@@ -28,10 +28,10 @@ export PATH="/<your_dir>/minigraph:$PATH"
 source ~/.bashrc
 
 # Assembly under the main mode of HiFiCCL with ultra-low coverage HiFi reads  
-python hificcl.py -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta>
+python hificcl.py -o ./ -t 30 -f <Absolute_path/Input.fasta> -r <Absolute_path/T2T-reference.fasta>
 
 # Assembly under the optional mode of HiFiCCL with ultra-low coverage HiFi reads
-python hificcl.py -m p -o ./ -t 30 -f <Input.fasta> -r <T2T-reference.fasta> -R <Pan-reference.gfa>  
+python hificcl.py -m p -o ./ -t 30 -f <Absolute_path/Input.fasta> -r <Absolute_path/T2T-reference.fasta> -R <Absolute_path/Pan-reference.gfa>  
 
 ```
 ## <a name="Dependency"></a>Dependency
@@ -83,7 +83,7 @@ With the increasing release of telomere-to-telomere (T2T) sequences and pan-geno
 
 A typical HiFiCCL command line looks like:
 ```sh
-python hificcl.py -f HG002_5x.fasta -r CHM13v2.0.fasta -o <your_dir> -t 32
+python hificcl.py -f /your_dir/HG002_5x.fasta -r /your_dir/CHM13v2.0.fasta -o <your_dir> -t 32
 ```
 where `-f` specifies the input reads, `-r` specifies the T2T reference genome used to guide the assembly, `-t` sets the number of CPUs in use and `-o` specifies the output directory. Finally, the primary contigs are written to `output.fasta`. 
 
@@ -95,7 +95,7 @@ HiFiCCL also generates assembly results for each chromosome. For more details, r
 
 HiFiCCL can utilize not only the T2T reference genome to guide assembly, but also the pangenome graph simultaneously for assembly guidance.
 ```sh
-python hificcl.py -m p -f HG002_5x.fasta -r CHM13v2.0.fasta -R hprc-v1.0-minigraph-chm13.gfa -o <your_dir> -t 32
+python hificcl.py -m p -f /your_dir/HG002_5x.fasta -r /your_dir/CHM13v2.0.fasta -R /your/dir/hprc-v1.0-minigraph-chm13.gfa -o <your_dir> -t 32
 ```
 In this mode, you need to use the `-m` option to specify the optional mode, use the `-R` option to specify the pangenome graph for assembly guidance.
 
