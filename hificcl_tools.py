@@ -210,7 +210,7 @@ def minigraph(pangfa, qryfasta, output, overwrite, prefix, minigraphoption):
         cmdr = subprocess.run(f'minigraph {minigraphoption} {pangfa} {qryfasta} > {output}',
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         if cmdr.returncode != 0:
-            print(f'[Error] Unexcepted error occur in hifiasm as follow:')
+            print(f'[Error] Unexcepted error occur in minigraph as follow:')
             print(f'cmd: {cmdr.args}')
             print(f'returncode: {cmdr.returncode}')
             print('stdout:')
