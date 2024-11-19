@@ -95,7 +95,7 @@ HiFiCCL also generates assembly results for each chromosome. For more details, r
 
 HiFiCCL can utilize not only the T2T reference genome to guide assembly, but also the pangenome graph simultaneously for assembly guidance.
 ```sh
-python hificcl.py -m p -f /your_dir/HG002_5x.fasta -r /your_dir/CHM13v2.0.fasta -R /your/dir/hprc-v1.0-minigraph-chm13.gfa -o <your_dir> -t 32
+python hificcl.py -m p -f /your_dir/HG002_5x.fasta -r /your_dir/CHM13v2.0.fasta -R /your_dir/hprc-v1.0-minigraph-chm13.gfa -o <your_dir> -t 32
 ```
 In this mode, you need to use the `-m` option to specify the optional mode, use the `-R` option to specify the pangenome graph for assembly guidance.
 
