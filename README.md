@@ -56,7 +56,6 @@ python hificcl.py -m p -o ./ -t 30 -f <Absolute_path/Input.fasta> -r <Absolute_p
   - [Installation](#install)
   - [HiFiCCL's commands](#commands)
   - [Output](#out)
-- [Limitations](#limit)
 - [Contact](#contact)
 - [Citing HiFiCCL](#cite)
 - [License](#license)
@@ -172,12 +171,6 @@ I hope this tool proves helpful for your research!
 
 ### <a name="out"></a>Output
 HiFiCCL will generate the alignment information of the reads to the reference genome, which is written to `*prefix*.map_to_reference.sam`, and the pairwise alignment information between the reads, which is written to `*prefix*.all_vs_all.paf`. Additionally, it will output the assembly results for different chromosomes, as well as the merged assembly results. The `chr_by_chr_reads_initial` file stores the results of the reads aligned to the reference genome before applying the chromosome binning algorithm, while `chr_by_chr_reads` file contains the results after applying the chromosome binning algorithm. `chr*` files represent the assembly results for different chromosomes. output.fasta is the final assembly result, used for assembly evaluation. The optional mode will also output the `*prefix*.gaf` file, which represents the alignment information of sequences to the pangenome graph.
-
-## <a name="limit"></a>Limitations
-
-1. The assembly accuracy of HiFiCCL becomes compromised as HiFi sequencing data coverage increases. This may be due to several factors, such as errors in chromosomal binning due to increased coverage or the impact of alignment errors.
-2. HiFiCCL solely utilizes HiFi data; however, incorporating multiple data types, such as Hi-C or nanopore data, may further enhance chromosome-by-chromosome assembly performance. This approach may potentially yield superior results in medium- and high-coverage datasets and enable T2T (telomere-to-telomere) sequence assembly at lower coverage, thus enabling high-precision genetic analyses at reduced costs.
-3. The optional mode of HiFiCCL performs comparably to the main mode. With the further development of pangenome construction tools and alignment tools, as well as the refinement of pangenome reference sequences, the optional mode is expected to achieve superior performance and may eventually replace the main mode, which is currently only applicable to the draft human pangenome.
 
 ## <a name="contact"></a>Contact
 
