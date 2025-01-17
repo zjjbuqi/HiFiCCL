@@ -62,7 +62,7 @@ python hificcl.py -m p -o ./ -t 30 -f <Absolute_path/Input.fasta> -r <Absolute_p
 
 ## <a name="intro"></a>Introduction
 
-With the increasing release of telomere-to-telomere (T2T) sequences and pan-genome sequences, genomics research has entered the T2T and pan-genome era, substantially advancing the field of population genomics. Sufficient-coverage HiFi data for population genomics is often prohibitively expensive, creating an urgent need for robust ultra-low coverage assemblies. However, current assemblers underperform in such conditions. Therefore, we introduce HiFiCCL, a reference-guided, chromosome-by-chromosome assembly framework for ultra-low coverage HiFi data. Our method effectively enhances ultra-low coverage assembly performance of existing assemblers, as demonstrated on two human datasets. Furthermore, combined with Hifiasm, it performs outstandingly in comparison with other state-of-the-art assemblers. Additionally, we validated HiFiCCL with Hifiasm on two plant datasets, where it also demonstrated strong performance. Meanwhile, it enhances downstream SV detection and significantly reduces inter-chromosomal misscaffoldings. Tested on 45 human datasets, HiFiCCL exhibits strong generalization and shows promising results in population genomics applications.
+Population genomics based on short-read resequencing primarily capture SNPs and small indels but struggle with structural variants (SVs), leading to a loss of heritability in GWAS. In recent years, long-read sequencing has improved pan-genome construction for key eukaryotic species, addressing this issue to some extent. However, despite decreasing costs, long-read sequencing remains signifi-cantly more expensive than short-read sequencing, limiting its use in large-scale populations and broader eukaryotic species. To address this, we propose HiFiCCL, a reference-guided, chromosome-by-chromosome genome assembly framework that can generate relatively high-quality assemblies using ultra-low-coverage HiFi reads, enabling the construction of high-quality, population-scale genome at a lower cost. Using ultra-low-coverage data, we demonstrate that HiFiCCL outperforms the state-of-the-art assemblers in both contig-level and chromosome-level assemblies, and that these improved assemblies enhance SV detection. Furthermore, we show that these improved assemblies enable the con-struction of a more accurate pangenome graph, which allows for more accurate SV detection.
 
 ## <a name="why"></a>Why HiFiCCL?
 
@@ -70,11 +70,11 @@ With the increasing release of telomere-to-telomere (T2T) sequences and pan-geno
 
 * HiFiCCL's improvement in assembly performance is also reflected in its enhancement of assembly-based SV detection, particularly in detecting challenging medically relevant SVs.
 
-* Upon scaffolding the HiFiCCL assembly results, it was found that inter-chromosomal mis-scaffoldings were significantly reduced compared to the base assemblers.
+* Upon scaffolding the HiFiCCL assembly results, it was found that inter-chromosomal mis-scaffolding were significantly reduced compared to the base assemblers.
 
 * HiFiCCL demonstrates exceptional generalizability, as testing on 45 ultra-low coverage human datasets revealed that HiFiCCL statistically achieved better assembly quality than Hifiasm.
 
-* At about 5x coverage, HiFiCCL runs faster than Hifiasm while using a comparable amount of memory.
+* At about 5x coverage human datasets, HiFiCCL runs faster than Hifiasm while using a comparable amount of memory.
 
 ## <a name="use"></a>Usage
 
@@ -84,7 +84,7 @@ A typical HiFiCCL command line looks like:
 ```sh
 python hificcl.py -f /your_dir/HG002_5x.fasta -r /your_dir/CHM13v2.0.fasta -o <your_dir> -t 32
 ```
-where `-f` specifies the input reads, `-r` specifies the T2T reference genome used to guide the assembly, `-t` sets the number of CPUs in use and `-o` specifies the output directory. Finally, the primary contigs are written to `output.fasta`. 
+where `-f` specifies the input reads, `-r` specifies the linear reference genome used to guide the assembly, `-t` sets the number of CPUs in use and `-o` specifies the output directory. Finally, the primary contigs are written to `output.fasta`. 
 
 HiFiCCL uses Hifiasm as the default base assembler, but you can specify a different assembler using the `-a` option, such as `-a flye` or `-a lja`, provided that these base assemblers are already installed and added to the system path.
 
@@ -92,7 +92,7 @@ HiFiCCL also generates assembly results for each chromosome. For more details, r
 
 ### <a name="optional"></a>HiFiCCL' optional mode
 
-HiFiCCL can utilize not only the T2T reference genome to guide assembly, but also the pangenome graph simultaneously for assembly guidance.
+HiFiCCL can utilize not only the linear reference genome to guide assembly, but also the pangenome graph simultaneously for assembly guidance.
 ```sh
 python hificcl.py -m p -f /your_dir/HG002_5x.fasta -r /your_dir/CHM13v2.0.fasta -R /your_dir/hprc-v1.0-minigraph-chm13.gfa -o <your_dir> -t 32
 ```
@@ -128,7 +128,7 @@ pip install pysam
 Similarly, you need to add HiFiCCL to the system path.
 ### <a name="commands"></a>HiFiCCL's commands
 ```
-usage: hificcl.py [-h] [-m model [str]] [-r T2T_reference_genome] [-R Pangenome_graph] -f input_reads [file] [-p prefix [str]] [-t threads [str]]
+usage: hificcl.py [-h] [-m model [str]] [-r linear_reference_genome] [-R Pangenome_graph] -f input_reads [file] [-p prefix [str]] [-t threads [str]]
                   [--overwrite] [-a assembler [str]] [--hifiasmoption [str]] [--ljaoption [str]] [--flyeoption [str]] [--minimapoption1 [str]]
                   [--minimapoption2 [str]] [--max_hang [int]] [--int_frac [float]] [--minigraphoption [float]] [-o output_dir [str]] [-W weight [int]]
                   [-N number [int]] [--iterations [int]] [--process [int]] [-v]
@@ -136,8 +136,8 @@ usage: hificcl.py [-h] [-m model [str]] [-r T2T_reference_genome] [-R Pangenome_
 options:
   -h, --help            show this help message and exit
   -m model [str]        Select the reference genome, normal or pan-genome. Please enter n or p! [n]
-  -r T2T_reference_genome [file]
-                        T2T reference genome file, FASTA format.
+  -r Linear_reference_genome [file]
+                        Linear reference genome file, FASTA format.
   -R Pangenome_graph [file]   Pan-reference genome file, GFA format. [optional]
   -f input_reads [file]
                         (*Required) raw reads file, FASTA format.
@@ -165,12 +165,12 @@ options:
   --process [int]       Number of processes used, with options of 1 or 2 [1]
   -v, --version         The version of HiFiCCL
 
-Example: python hificcl.py -r <T2T_Reference.fasta> -f <your_input.fasta> -t <threads> -o <your_dir>
+Example: python hificcl.py -r <Linear_Reference.fasta> -f <your_input.fasta> -t <threads> -o <your_dir>
 ```
 I hope this tool proves helpful for your research!
 
 ### <a name="out"></a>Output
-HiFiCCL will generate the alignment information of the reads to the reference genome, which is written to `*prefix*.map_to_reference.sam`, and the pairwise alignment information between the reads, which is written to `*prefix*.all_vs_all.paf`. Additionally, it will output the assembly results for different chromosomes, as well as the merged assembly results. The `chr_by_chr_reads_initial` file stores the results of the reads aligned to the reference genome before applying the chromosome binning algorithm, while `chr_by_chr_reads` file contains the results after applying the chromosome binning algorithm. `chr*` files represent the assembly results for different chromosomes. output.fasta is the final assembly result, used for assembly evaluation. The optional mode will also output the `*prefix*.gaf` file, which represents the alignment information of sequences to the pangenome graph.
+HiFiCCL will generate the alignment information of the reads to the reference genome, which is written to `*prefix*.map_to_reference.sam`, and the pairwise alignment information between the reads, which is written to `*prefix*.all_vs_all.paf`. Additionally, it will output the assembly results for different chromosomes, as well as the merged assembly results. The `chr_by_chr_reads` file contains the results after applying the chromosome binning algorithm. `chr*` files represent the assembly results for different chromosomes. output.fasta is the final assembly result, used for assembly evaluation. The optional mode will also output the `*prefix*.gaf` file, which represents the alignment information of sequences to the pangenome graph.
 
 ## <a name="contact"></a>Contact
 
