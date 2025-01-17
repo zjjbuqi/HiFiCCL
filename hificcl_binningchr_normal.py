@@ -27,7 +27,6 @@ def Binningchr(args):
     trans_calling = trans_calls.Trans_calls(map_file)
     trans_calling.run()
     ALG.initial_label(map_file)
-    ALG.write_chr_by_chr_reads_intial(workdir, inputdict)
     ALG.overlap_degree_sort()
     N = iterations
     ALG.label_correct(N)
