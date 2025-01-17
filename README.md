@@ -106,7 +106,7 @@ HiFiCCL will generate the alignment information of the reads to the reference ge
 
 The following table shows the statistics of HiFiCCL combined with Hifiasm(0.19.5-r592).
 
-|<sub>Dataset<sub>|<sub>Size<sub>|<sub>Cov.<sub>|<sub>Asm options<sub>|<sub>Wall time<sub>|<sub>Maximum resident set size<sub>|<sub> NG50<sub>|
+|<sub>Dataset<sub>|<sub>Species size<sub>|<sub>Cov.<sub>|<sub>Asm options<sub>|<sub>Wall time<sub>|<sub>Maximum resident set size<sub>|<sub> NG50<sub>|
 |:---------------|-----:|-----:|:---------------------|--------:|----:|----------------:|
 |<sub>[HG002][hg002-data]</sub>|<sub>3.1Gb</sub>|<sub>&times;5</sub>|<sub>-t20 --primary</sub>|<sub>5.0h</sub>|<sub>55G</sub>|<sub>199.0Kb</sub>|
 |<sub>[NA19240][na19240-data]</sub>|<sub>3.1Gb</sub>|<sub>&times;5</sub>|<sub>-t20 --primary</sub> |<sub>4.1h</sub>|<sub>53G</sub>|<sub>123.4Kb</sub>|
