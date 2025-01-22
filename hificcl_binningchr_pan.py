@@ -26,7 +26,7 @@ def Binningchr_pan(args):
     trans_calling = trans_calls.Trans_calls(map_file)
     trans_calling.run()
     ALG.initial_label(map_file)
-    None_file = ALG.write_chr_by_chr_reads_intial(workdir, inputdict)
+
 
     print('[Info] Starting map_to_pan_reference alignment in minigraph...')
     map_file = hificcl_tools.minigraph(pangfa, None_file, workdir, overwrite, prefix, minigraphoption)
