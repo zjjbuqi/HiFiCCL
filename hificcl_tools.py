@@ -146,8 +146,8 @@ def convert_bases(size_bases):
 
 def flyechr(flyeoption, overwrite, output, file_list, ref_size_information):
     print('[Info] Starting excuting flye program for the reads of each chr...')
-    print(f'[Info] {ref_size_information}')
-    print(f'info {file_list}')
+    # print(f'[Info] {ref_size_information}')
+    # print(f'info {file_list}')
     for file in file_list:
         if file == "None":
             continue
