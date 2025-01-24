@@ -46,6 +46,6 @@ def Binningchr_pan(args):
 
     file_list = ALG.write_chr_by_chr_reads(workdir, inputdict)
     new_dir = os.path.join(workdir, 'chr_by_chr_reads_initial')
-    os.rmdir(new_dir)
+    os.system(f'rm -rf {new_dir}')
     return file_list, ALG.ref_size_information
 
