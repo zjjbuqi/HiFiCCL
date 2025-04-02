@@ -17,7 +17,7 @@ export PATH="/<your_dir>/minimap2:$PATH"
 git clone https://github.com/zjjbuqi/HiFiCCL.git  
 pip install pysam
 or
-conda create -n hificcl python=3.10.11 pysam -c conda-forge
+conda create -n hificcl python=3.10.11 pysam=0.21.0 -c conda-forge
 conda activate hificcl
 
 #[optional] if you want to use the optional mode of HiFiCCL, you also need to install minigraph and add it to the system path.
@@ -37,7 +37,7 @@ python /<your_path>/hificcl.py -m p -o ./ -t 30 -f <absolute_path/Input.fasta> -
 ## <a name="Dependency"></a>Dependency
 1. [minimap2](https://github.com/lh3/minimap2)
 2. [hifiasm](https://github.com/chhylp123/hifiasm) or [flye](https://github.com/mikolmogorov/Flye) or [lja](https://github.com/AntonBankevich/LJA)
-3. [pysam](https://github.com/pysam-developers/pysam)
+3. [pysam 0.21.0](https://github.com/pysam-developers/pysam)
 4. [python 3.10.11](https://www.python.org/downloads/release/python-31011/)
 5. [minigraph](https://github.com/lh3/minigraph) (optional)
 
