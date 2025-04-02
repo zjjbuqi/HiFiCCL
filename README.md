@@ -16,9 +16,9 @@ export PATH="/<your_dir>/minimap2:$PATH"
  
 git clone https://github.com/zjjbuqi/HiFiCCL.git  
 pip install pysam
-nano ~/.bashrc
-export PATH="/<your_dir>/HiFiCCL:$PATH"
-source ~/.bashrc
+or
+conda create -n hificcl python=3.10.3 pysam -c conda-forge
+conda activate hificcl
 
 #[optional] if you want to use the optional mode of HiFiCCL, you also need to install minigraph and add it to the system path.
 git clone https://github.com/lh3/minigraph
@@ -28,10 +28,10 @@ export PATH="/<your_dir>/minigraph:$PATH"
 source ~/.bashrc
 
 # Assembly under the main mode of HiFiCCL with ultra-low coverage HiFi reads  
-python hificcl.py -o ./ -t 30 -f <Absolute_path/Input.fasta> -r <Absolute_path/T2T-reference.fasta>
+python /<your_path>/hificcl.py -o ./ -t 30 -f <absolute_path/Input.fasta> -r <absolute_path/T2T-reference.fasta>
 
 # Assembly under the optional mode of HiFiCCL with ultra-low coverage HiFi reads
-python hificcl.py -m p -o ./ -t 30 -f <Absolute_path/Input.fasta> -r <Absolute_path/T2T-reference.fasta> -R <Absolute_path/Pan-reference.gfa>  
+python /<your_path>/hificcl.py -m p -o ./ -t 30 -f <absolute_path/Input.fasta> -r <absolute_path/T2T-reference.fasta> -R <absolute_path/Pan-reference.gfa>  
 
 ```
 ## <a name="Dependency"></a>Dependency
@@ -82,7 +82,7 @@ Population genomics based on short-read resequencing primarily capture SNPs and 
 
 A typical HiFiCCL command line looks like:
 ```sh
-python hificcl.py -f /your_dir/HG002_5x.fasta -r /your_dir/CHM13v2.0.fasta -o <your_dir> -t 32
+python /<your_path>/hificcl.py -f /your_dir/HG002_5x.fasta -r /your_dir/CHM13v2.0.fasta -o <your_dir> -t 32
 ```
 where `-f` specifies the input reads, `-r` specifies the linear reference genome used to guide the assembly, `-t` sets the number of CPUs in use and `-o` specifies the output directory. Finally, the primary contigs are written to `output.fasta`. 
 
@@ -94,7 +94,7 @@ HiFiCCL also generates assembly results for each chromosome. For more details, r
 
 HiFiCCL can utilize not only the linear reference genome to guide assembly, but also the pangenome graph simultaneously for assembly guidance.
 ```sh
-python hificcl.py -m p -f /your_dir/HG002_5x.fasta -r /your_dir/CHM13v2.0.fasta -R /your_dir/hprc-v1.0-minigraph-chm13.gfa -o <your_dir> -t 32
+python /<your_path>/hificcl.py -m p -f /your_dir/HG002_5x.fasta -r /your_dir/CHM13v2.0.fasta -R /your_dir/hprc-v1.0-minigraph-chm13.gfa -o <your_dir> -t 32
 ```
 In this mode, you need to use the `-m` option to specify the optional mode, use the `-R` option to specify the pangenome graph for assembly guidance.
 
@@ -165,7 +165,7 @@ options:
   --process [int]       Number of processes used, with options of 1 or 2 [1]
   -v, --version         The version of HiFiCCL
 
-Example: python hificcl.py -r <Linear_Reference.fasta> -f <your_input.fasta> -t <threads> -o <your_dir>
+Example: python /<your_path>/hificcl.py -r <Linear_Reference.fasta> -f <your_input.fasta> -t <threads> -o <your_dir>
 ```
 I hope this tool proves helpful for your research!
 
