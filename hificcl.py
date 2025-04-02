@@ -100,7 +100,7 @@ def Primaryassemble(args):
         os.remove(merge_fasta)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(epilog="Example:\n python hificcl.py -r <Linear_Reference.fasta> -f <your_input.fasta> -t <threads> -o <your_dir>")
+    parser = argparse.ArgumentParser(epilog="Example:\n python /<your_path>/hificcl.py -r <Linear_Reference.fasta> -f <your_input.fasta> -t <threads> -o <your_dir>")
     parser.add_argument('-m', dest='model', metavar="model [str]", default='n',help='Select the reference genome, linear or pan-genome. Please enter n or p! [n]')
     parser.add_argument('-r', dest='reference_genome', metavar="Linear_reference_genome [file]",help='Linear reference genome file, FASTA format.')
     parser.add_argument('-R', dest='pan_reference_genome', metavar="Pangenome_graph [file]", help='Pan-reference genome file, GFA format. [optional]')
