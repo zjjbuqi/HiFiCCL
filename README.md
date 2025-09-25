@@ -66,19 +66,19 @@ Population genomics using short-read resequencing captures single nucleotide pol
 
 ## <a name="why"></a>Why HiFiCCL?
 
-* HiFiCCL improves the assembly performance of different assemblers, such as Hifiasm, HiFlye, and LJA, under ultra-low coverage conditions.
+* HiFiCCL improves the assembly performance of different assemblers, such as Hifiasm, HiFlye, and LJA, under low coverage conditions.
 
 * HiFiCCL's improvement in assembly performance is also reflected in its enhancement of assembly-based SV detection, particularly in detecting challenging medically relevant SVs.
 
 * Upon scaffolding the HiFiCCL assembly results, it was found that inter-chromosomal mis-scaffolding were significantly reduced compared to the base assemblers.
 
-* HiFiCCL demonstrates exceptional generalizability, as testing on 45 ultra-low coverage human datasets revealed that HiFiCCL statistically achieved better assembly quality than Hifiasm.
+* HiFiCCL demonstrates exceptional generalizability, as testing on 45 low coverage human datasets revealed that HiFiCCL statistically achieved better assembly quality than Hifiasm.
 
 * At about 5x coverage human datasets, HiFiCCL runs faster than Hifiasm while using a comparable amount of memory.
 
 ## <a name="use"></a>Usage
 
-### <a name="main"></a>HiFiCCL's main mode
+### <a name="main"></a>HiFiCCL's default mode
 
 A typical HiFiCCL command line looks like:
 ```sh
