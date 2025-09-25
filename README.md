@@ -56,6 +56,7 @@ python /<your_path>/hificcl.py -m p -o ./ -t 30 -f <absolute_path/Input.fasta> -
   - [Installation](#install)
   - [HiFiCCL's commands](#commands)
   - [Output](#out)
+  - [Paper analysis](#analysis)
 - [Contact](#contact)
 - [Citing HiFiCCL](#cite)
 - [License](#license)
@@ -171,6 +172,9 @@ I hope this tool proves helpful for your research!
 
 ### <a name="out"></a>Output
 HiFiCCL will generate the alignment information of the reads to the reference genome, which is written to `*prefix*.map_to_reference.sam`, and the pairwise alignment information between the reads, which is written to `*prefix*.all_vs_all.paf`. Additionally, it will output the assembly results for different chromosomes, as well as the merged assembly results. The `chr_by_chr_reads` file contains the results after applying the chromosome binning algorithm. `chr*` files represent the assembly results for different chromosomes. output.fasta is the final assembly result, used for assembly evaluation. The optional mode will also output the `*prefix*.gaf` file, which represents the alignment information of sequences to the pangenome graph.
+
+### <a name="analysis"></a>Paper analysis
+The analyses included in the paper and the commands used can be found in paper_analysis.txt.
 
 ## <a name="contact"></a>Contact
 
