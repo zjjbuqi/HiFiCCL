@@ -1,0 +1,120 @@
+All the commands required to reproduce the content of this study.
+Commands used by different assemblers and evaluation for human and plants datasets
+
+The reference genome used for HiFiCCL is CHM13-T2T (v2.0), while the pangenome utilized is hprc-v1.0-minigraph-chm13.gfa.
+
+HiFiCCL: > python hificcl.py -t 20 -o <your_path> -m n -r <your_path/chm13v2.0.fa> -f <your_input.fasta> -a <assemblers>
+HiFiCCL(optional)：> python hificcl.py -t 20 -o <your_path> -m p -r <your_path/chm13v2.0.fa> -R <your_path/hprc-v1.0-minigraph-chm13.gfa> -f <your_input.fasta> -a <assemblers>
+Hifiasm：> hifiasm -o <your_path> -t 20 --primary <your_input.fasta>
+LJA：> lja -t 20 --diploid -o <your_path> --reads <your_input.fasta>
+Verkko：> verkko -d  <your_path> --hifi <your_input.fasta> --threads 20
+Flye: > flye --pacbio-hifi <your_input.fasta> --out-dir <your_path> --threads 20 --iterations 0
+GALA: > gala <your_draft_genome> fa <your_input.fasta> pacbio-corrected --hifi -a <assemblers> -threads 20
+
+In the case of GALA, it is necessary to specify the path to the draft genome. The draft genomes selected are the assembly results from Hifiasm, HiFlye and CHM13(2.0). The code from the original GALA paper available at https://github.com/ganlab/GALA could not be executed successfully. Instead, we used the code from https://github.com/JohnUrban/GALA for our analysis.
+
+The commands used for the evaluation of the assembly results are as follows:
+BUSCO: > busco -i <your_input.fasta> -o <your_prefix> -c 20 vertebrata_odb10 --mode genome -f --offline
+
+For plant genomes:
+BUSCO: > busco -i <your_input.fasta> -o <your_prefix> -c 20 embryophyta_odb10 --mode genome -f  --offline
+Quast: > python quast.py -o <your_path> -r <your_reference.fasta> -t 20 <your_input.fasta>
+
+For evaluating basic metrics like contiguity in human datasets, the reference genome used was CHM13 (v2.0). The assembly accuracy was evaluated using reference genomes from the same sample as the assemblies. Specifically, HG002 was evaluated against the HG002-T2T reference genome, while the other human datasets were assessed using high-quality assemblies published by the HPRC. For the assembly quality assessment on rice datasets[58], the reference genome used was the Nipponbare T2T genome. For the assembly quality assessment on Arabidopsis dataset[59], a high-quality Arabidopsis thaliana genome[60] was used as the reference.
+
+Use Merqury to evaluate genome assemblies by first creating a k-mer database with meryl count and then running merqury.sh to generate QV, error rates, and k-mer distribution.
+meryl count k=21 output <your_sample>.meryl <your_reads>.fastq
+merqury.sh <your_sample>.meryl <your_assembly>.fasta <your_prefix>
+
+Commands used by germline SVs detection and evaluation
+
+Alignment-based SV detection and evaluation:
+> minimap2 -ax map-hifi GRCH37.fa <input_file.fasta> -t 20 > aln.sam
+> samtools view -Sb aln.sam > aln.bam
+> samtools sort aln.bam -o aln_sorted.bam
+> samtools index aln_sorted.bam
+> svim alignment my_sample aln_sorted.bam GRCH37.fa
+
+The SV detection algorithm based on contigs alignment was performed using svim-asm, with GRCh37 as the reference genome. The resulting files were sorted and indexed using samtools, and the “vcf” files were also sorted and indexed. The commands are as follows:
+> minimap2 -a -x asm5 --cs -r2k -t 20 GRCH37.fa <your_assembly.fasta> > aln.sam
+> samtools view -Sb aln.sam > aln.bam
+> samtools sort aln.bam -o aln_sorted.bam
+> samtools index aln_sorted.bam
+> svim-asm haploid <your_dir> aln_sorted.bam GRCH37.fa
+> bcftools sort <my.vcf> -o <my_sorted.vcf>
+> bgzip <my_sorted.vcf>
+> tabix <my_sorted.vcf.gz>
+
+The evaluation was conducted using Truvari (v3.2.0) with the GIAB version 0.6 SV benchmark (high-confidence regions). The Challenging Medical Relevant Genes (CMRG) SV panel was also utilized for the assessment. Additionally, the latest GIAB benchmark was also included for testing. The commands are as follows:
+> truvari bench --passonly -p 0 --sizefilt 50 --sizemin 50 --sizemax 1000000 --includebed HG002_SVs_Tier1_v0.6.bed -b HG002_SVs_Tier1_v0.6.vcf.gz -c <my_sorted.vcf.gz> -f hs37d5.fa -o <my_dir>
+> truvari bench --passonly -p 0 --sizefilt 50 --sizemin 50 --sizemax 1000000 --includebed HG002_GRCh37_CMRG_SV_v1.00.bed -b HG002_GRCh37_CMRG_SV_v1.00.vcf.gz -c <my_sorted.vcf.gz> -f hs37d5.fa -o <my_dir>
+
+Commands used by scaffolding, evaluation, and synteny analysis
+
+The scaffolding was performed using Ragtag, with CHM13-T2T (v2.0) selected as the reference genome. The commands are as follows:
+> ragtag.py scaffold <reference.fa> <query.fa>
+
+The evaluation was similarly conducted using BUSCO and QUAST to assess basic metrics such as contiguity, with CHM13 (v2.0) selected as the reference genome. Assembly accuracy was evaluated using reference genomes consistent with the sample source of the assembled reads. Specifically, the reference genome for HG002 was HG002-T2T, while for the other human datasets, the reference genomes were the scaffolded sequences from high-quality assemblies published by HPRC, processed using Ragtag.
+
+Synteny analysis was performed using NGenomeSyn. The commands are as follows:
+> GetTwoGenomeSyn.pl -InGenomeA <your_scaffolding.fasta> - InGenomeB <your_reference.fasta> -OutPrefix <your_dir>
+
+Commands for pangenome graph construction and bubble region consistency evaluation
+
+The pangenome graph was constructed using minigraph. The shell script is as follows:
+> CHM13_path="<CHM13.fasta>"
+> ref=$(find . -type f -path "<GRCH38.fasta>")
+> other_sample_paths=$(find . -type f -path "*/hifiasm/output_name.fasta" | sort)
+> sample_paths="$CHM13_path $other_sample_paths"
+> cmd=" minigraph -cxggs -t20 $ref $sample_paths > GRCH38_hifiasm_minigraph_name.gfa"
+> eval $cmd
+
+The bubble regions of the pangenome were identified using gfatools, generating a BED file:
+> gfatools bubble graph.gfa > var.bed
+
+Using the BED file generated from the pangenome graph constructed by minigraph from the HPRC release as the reference (real.bed), bubble regions in our pangenome graph with over 80% overlap with real.bed are considered true positives (TP), otherwise they are considered false positives (FP). The commands are as follows:
+> bedtools intersect -a <our_graph.bed> -b real.bed -f 0.80 -u > tp.bed
+> bedtools intersect -a <our_graph.bed> -b real.bed -f 0.80 -v > fp.bed
+> bedtools intersect -a <real.bed> -b <our_graph.bed> -f 0.80 -v >fn.bed
+
+The evaluation was conducted across different intervals using our provided evalu-ate_bed.py, after modifying the paths of the input files.
+
+Commands for large, specific germline SVs detection based on pangenome graph and evaluation
+
+First, the input sequence is aligned to the reference genome GRCh38 using miniamp2-2.28+, followed by alignment to the reference genome CHM13-T2T. Finally, the input is aligned using minigraph-0.21+. When the input data is HiFi data, the com-mands are as follows:
+> minimap2 -cx map-hifi -s50 --ds GRCH38.fa <your_hifi_dataset.fasta> -t <threads> >hifi_grch38.paf
+> minimap2 -cx map-hifi -s50 --ds CHM13-T2T.fa <your_hifi_dataset.fasta> -t <threads> >hifi_chm13.paf
+> minigraph -cxlr <pangraph.gfa> <hifi_dataset.fasta> -t <threads> > hifi_pan.gaf
+
+When the input data is nanopore data, the commands are as follows:
+> minimap2 -cx map-ont GRCH38.fa <your_ont_dataset.fasta> -t <threads> > ont_grch38.paf
+> minimap2 -cx map-ont CHM13-T2T.fa <ont_dataset.fasta> -t <threads> > ont_chm13.paf
+> minigraph -cxlr <pangraph.gfa> <your_hifi_dataset.fasta> -t <threads> > ont_pan.gaf
+
+Germline-specific SV detection was performed using minisv.
+> minisv.js e -b data/hs38.cen-mask.bed hifi_grch38.paf hifi_chm13.paf hifi_pan.gaf | bash > hifi_sv.rsv
+> cat hifi.rsv | sort -k1,1 -k2,2 -S4g | minisv.js merge - > hifi_sv.msv
+> minisv.js genvcf hifi_sv.msv > hifi_sv.vcf
+
+Similarly, ont_sv.vcf can be obtained. Evaluation was performed using Truvari, with the SV benchmark set consisting of the SVs identified by minisv from the alignments to two linear reference genomes and the pangenome graph released by HPRC (re-al.vcf). All VCF files were sorted, compressed, and indexed, followed by the evaluation.
+
+Commands for detecting large cancer somatic SVs
+
+There are two scenarios for cancer somatic variant detection using minisv: detection with only tumor samples and detection with tumor-normal pairs. For detection with only tumor samples, the process is the same as long, rare germline SV detection based on the pangenome graph. In the case of tumor-normal pairs, miniamp2 is used to perform reciprocal alignment between the tumor and normal datasets, followed by detection using minisv. The commands are as follows:
+> minimap2 -x ava-ont <my_normal.fasta> <my_tumor.fasta> > normal_tumor.paf
+> minisv.js e -n TUMOR -0b data/hs38.cen-mask.bed ont_grch38.paf ont_chm13.paf ont_pan.gaf normal_tumor.paf  > cancer.rsv
+> minisv.js extract -n Normal normal.paf  > normal.rsv
+> cat cancer.rsv normal.rsv | sort -k1,1 -k2,2 -S4g | minisv.js merge - | grep TUMOR | grep -v NORMAL > paired.msv
+> minisv.js genvcf paired.msv > paired.vcf
+
+The evaluation was conducted using the same parameters as mentioned above for Truvari, except that the SV benchmark set from COLO829 was selected for the evaluation. The commands used by Sniffles for detecting cancer somatic SVs are as follows:
+> sniffles --input mapped_input.bam --vcf output.vcf --mosaic
+
+Pangenome graph augmentation commands
+
+The scripts for graph augmentation are as follows:
+> ref=hprc-v1.0-minigraph-grch38.gfa
+> other_sample_paths=$(find . -type f -path "*/hificcl_name.fasta" | sort)
+> sample_paths="$other_sample_paths"
+> cmd="minigraph -cxggs -t20 $ref $sample_paths > plus_minigraph.gfa"
+> eval $cmd
