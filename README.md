@@ -174,7 +174,7 @@ I hope this tool proves helpful for your research!
 HiFiCCL will generate the alignment information of the reads to the reference genome, which is written to `*prefix*.map_to_reference.sam`, and the pairwise alignment information between the reads, which is written to `*prefix*.all_vs_all.paf`. Additionally, it will output the assembly results for different chromosomes, as well as the merged assembly results. The `chr_by_chr_reads` file contains the results after applying the chromosome binning algorithm. `chr*` files represent the assembly results for different chromosomes. output.fasta is the final assembly result, used for assembly evaluation. The optional mode will also output the `*prefix*.gaf` file, which represents the alignment information of sequences to the pangenome graph.
 
 ### <a name="analysis"></a>Paper analysis
-The analyses included in the paper and the commands used can be found in paper_analysis.txt. The assembly results referenced in the manuscript are available on Zenodo and can be accessed using the DOI: 10.5281/zenodo.17204429.
+The analyses included in the paper and the commands used can be found in paper_analysis.txt. The assembly results referenced in the manuscript are available on Zenodo and can be accessed using the [DOI: 10.5281/zenodo.17204429](https://doi.org/10.5281/zenodo.17204429).
 
 ## <a name="contact"></a>Contact
 
