@@ -184,7 +184,6 @@ If you experience any problems or have suggestions please create an issue or a p
 
 If you use HiFiCCL in your work, please cite:
 
-Jiang Z, Pan W, Gao R, Hu H, Gao W, Zhou M, et al. Reference-guided genome assembly at scale using ultra-low-coverage high-fidelity long-reads with HiFiCCL. bioRxiv. 2025:2025.04.20.649739.
 
 
 ## <a name="license"></a>License
