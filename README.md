@@ -183,6 +183,7 @@ If you experience any problems or have suggestions please create an issue or a p
 ## <a name="cite"></a>Citing HiFiCCL
 
 If you use HiFiCCL in your work, please cite:
+
 Jiang Z, Pan W, Gao R, et al. Reference-Guided Chromosome-by-Chromosome de novo Assembly at Scale Using Low-Coverage High-Fidelity Long-Reads with HiFiCCL. Adv Sci (Weinh). Published online December 25, 2025. doi:10.1002/advs.202515308
 
 
